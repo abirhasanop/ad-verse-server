@@ -123,6 +123,7 @@ async function run() {
         // inserting order to database
         app.post("/orders", async (req, res) => {
             const order = req.body
+            const updatedProduct = await allProductCollection.updateOne({ _id: ObjectId(order._id) }, { $set: { status: "Sold" } })
             const result = await allOrdersCollection.insertOne(order)
             res.send(result)
         })
@@ -133,6 +134,14 @@ async function run() {
             console.log(email);
             const query = { email: email }
             const result = await allOrdersCollection.find(query).toArray()
+            res.send(result)
+        })
+        // delete orders
+        app.delete("/orders/:id", async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const updatedProduct = await allProductCollection.updateOne({ _id: ObjectId(id) }, { $set: { status: "Available" } })
+            const result = await allOrdersCollection.deleteOne(query)
             res.send(result)
         })
 
