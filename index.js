@@ -21,7 +21,6 @@ async function run() {
         const allProductCollection = client.db("dbAdVerse").collection("allProductss")
         const allOrdersCollection = client.db("dbAdVerse").collection("allOrders")
         const allUsersCollection = client.db("dbAdVerse").collection("allUsers")
-        const myProductsCollection = client.db("dbAdVerse").collection("myProducts")
 
         // Sendng all products to Cliet Side
         app.get("/allproducts", async (req, res) => {
@@ -89,7 +88,7 @@ async function run() {
         app.delete("/myproducts/:id", async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
-            const result = await myProductsCollection.deleteOne(query)
+            const result = await allProductCollection.deleteOne(query)
             res.send(result)
         })
 
@@ -144,13 +143,24 @@ async function run() {
             const user = await allUsersCollection.findOne(query)
             res.send({ isSeller: user?.role === "seller" })
         })
-
+        // find admin
         app.get("/users/admin/:email", async (req, res) => {
             const email = req.params.email
             const query = { email: email }
             const user = await allUsersCollection.findOne(query)
             console.log(user);
             res.send({ isAdmin: user?.role === "admin" })
+        })
+
+
+
+        // Verifying Sellers
+        app.get('/api/seller/verify/:email', async (req, res) => {
+            const email = req.params.email
+            const updatedUser = await allUsersCollection.updateOne({ email }, { $set: { varified: true } })
+            const updateProducts = await allProductCollection.updateMany({ sellerEmail: email }, { $set: { varified: true } })
+            console.log(updateProducts)
+            res.json(updatedUser)
         })
     } finally {
 
