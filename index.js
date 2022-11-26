@@ -30,12 +30,29 @@ async function run() {
             res.send(allProducts)
         })
 
-        // Insertig a product
-        app.post("/allproduct", async (req, res) => {
-            const product = req.body
-            const result = await allProductCollection.insertOne(product)
+        // update a advertize status 
+        app.put("/allproduct/:id", async (req, res) => {
+            // const product = req.body
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: {
+                    advertised: true
+                }
+            }
+            const result = await allProductCollection.updateOne(query, updatedDoc, options)
             res.send(result)
         })
+
+
+        // find adevertized product
+        app.get("/advertizedproduct", async (req, res) => {
+            const query = { advertised: true }
+            const result = await allProductCollection.find(query).toArray()
+            res.send(result)
+        })
+
 
         // inserting product to database
         // app.post("/myproducts", async (req, res) => {
