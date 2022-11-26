@@ -43,18 +43,28 @@ async function run() {
         //     const result = await myProductsCollection.insertOne(product)
         //     res.send(result)
         // })
+
+
         // updated work
         app.post("/myproducts", async (req, res) => {
             const product = req.body
-            const result = await myProductsCollection.insertOne(product)
+            const result = await allProductCollection.insertOne(product)
             res.send(result)
         })
 
         // finding my products using email
+        // app.get("/myproducts", async (req, res) => {
+        //     const email = req.query.email
+        //     const query = { sellerEmail: email }
+        //     const result = await myProductsCollection.find(query).toArray()
+        //     res.send(result)
+        // })
+
+        // updated work
         app.get("/myproducts", async (req, res) => {
             const email = req.query.email
             const query = { sellerEmail: email }
-            const result = await myProductsCollection.find(query).toArray()
+            const result = await allProductCollection.find(query).toArray()
             res.send(result)
         })
 
