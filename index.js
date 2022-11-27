@@ -22,6 +22,7 @@ async function run() {
         const allProductCollection = client.db("dbAdVerse").collection("allProductss")
         const allOrdersCollection = client.db("dbAdVerse").collection("allOrders")
         const allUsersCollection = client.db("dbAdVerse").collection("allUsers")
+        const paymentCollection = client.db("dbAdVerse").collection("payments")
 
         // Sendng all products to Cliet Side
         app.get("/allproducts", async (req, res) => {
