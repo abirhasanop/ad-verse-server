@@ -152,7 +152,6 @@ async function run() {
             const id = req.params.id
             // console.log(id);
             const productId = req.body.productId
-            console.log(productId);
             const query = { _id: ObjectId(id) }
             const updatedProduct = await allProductCollection.updateOne({ _id: ObjectId(productId) }, { $set: { status: "Available" } })
             const result = await allOrdersCollection.deleteOne(query)
@@ -202,6 +201,16 @@ async function run() {
             res.send({
                 clientSecret: paymentIntent.client_secret,
             });
+        })
+
+        app.post("/payments", async (req, res) => {
+            const payment = req.body
+            const orderId = payment.orderId
+            const transactionId = payment.transactionId
+            const options = { upsert: true }
+            const updatedOrder = await allOrdersCollection.updateOne({ _id: ObjectId(orderId) }, { $set: { isPaid: true, transactionId: transactionId } }, options)
+            const result = await paymentCollection.insertOne(payment)
+            res.send(result)
         })
     } finally {
 
