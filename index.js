@@ -26,7 +26,7 @@ function verifyJwt(req, res, next) {
         return res.status(401).send({ message: "unauthorized access" })
     }
     const token = authHeader.split(' ')[1]
-    jwt.verify(token, process.env.ACCES_TOKEN_SECRET, function (err, decoded) {
+    jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
         if (err) {
             return res.status(403).send({ message: "unauthorized acces" })
         }
@@ -50,7 +50,7 @@ async function run() {
         app.post('/jwt', (req, res) => {
             const user = req.body
             console.log(user);
-            const token = jwt.sign(user, process.env.ACCES_TOKEN_SECRET)
+            const token = jwt.sign(user, process.env.TOKEN_SECRET)
             console.log({ token });
             res.send({ token })
         })
@@ -104,7 +104,7 @@ async function run() {
 
 
         // find adevertized product
-        app.get("/advertizedproduct", async (req, res) => {
+        app.get("/advertizedproduct", verifyJwt, async (req, res) => {
             const query = { advertised: true }
             const result = await allProductCollection.find(query).toArray()
             res.send(result)
@@ -174,7 +174,7 @@ async function run() {
         })
 
         // find buyers form usrs
-        app.get("/buyers", async (req, res) => {
+        app.get("/buyers", verifyJwt, async (req, res) => {
             const query = { role: "buyer" }
             const result = await allUsersCollection.find(query).toArray()
             res.send(result)
@@ -195,7 +195,7 @@ async function run() {
         })
 
         // finding all orders
-        app.get("/orders", async (req, res) => {
+        app.get("/orders", verifyJwt, async (req, res) => {
             const email = req.query.email
             const query = { email: email }
             const result = await allOrdersCollection.find(query).toArray()
