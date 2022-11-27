@@ -1,6 +1,7 @@
 const express = require("express")
 const cors = require("cors")
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt = require("jsonwebtoken")
 const port = process.env.PORT || 5000
 require('dotenv').config()
 const stripe = require("stripe")(process.env.STRIPE_SECRET)
@@ -17,6 +18,26 @@ app.use(express.json())
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.vn5qrrb.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+
+
+function verifyJwt(req, res, next) {
+    const authHeader = req.headers.authorization
+    if (!authHeader) {
+        return res.status(401).send({ message: "unauthorized access" })
+    }
+    const token = authHeader.split(' ')[1]
+    jwt.verify(token, process.env.ACCES_TOKEN_SECRET, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({ message: "unauthorized acces" })
+        }
+        req.decoded = decoded
+        next()
+    })
+}
+
+
+
+
 async function run() {
     try {
         const allProductCollection = client.db("dbAdVerse").collection("allProductss")
@@ -24,6 +45,17 @@ async function run() {
         const allOrdersCollection = client.db("dbAdVerse").collection("allOrders")
         const allUsersCollection = client.db("dbAdVerse").collection("allUsers")
         const paymentCollection = client.db("dbAdVerse").collection("payments")
+
+        // jwt token
+        app.post('/jwt', (req, res) => {
+            const user = req.body
+            console.log(user);
+            const token = jwt.sign(user, process.env.ACCES_TOKEN_SECRET)
+            console.log({ token });
+            res.send({ token })
+        })
+
+
 
         // Sendng all products to Cliet Side
         app.get("/allproducts", async (req, res) => {
