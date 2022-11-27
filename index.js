@@ -20,6 +20,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const allProductCollection = client.db("dbAdVerse").collection("allProductss")
+        const ReportedProductCollection = client.db("dbAdVerse").collection("reportedProduct")
         const allOrdersCollection = client.db("dbAdVerse").collection("allOrders")
         const allUsersCollection = client.db("dbAdVerse").collection("allUsers")
         const paymentCollection = client.db("dbAdVerse").collection("payments")
@@ -29,6 +30,13 @@ async function run() {
             const query = {}
             const allProducts = await allProductCollection.find(query).toArray()
             res.send(allProducts)
+        })
+
+        // Reported Product
+        app.post("/allproducts/report", async (req, res) => {
+            const reportedProduct = req.body
+            const result = await ReportedProductCollection.insertOne(reportedProduct)
+            res.send(result)
         })
 
         // update a advertize status 
