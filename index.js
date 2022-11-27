@@ -39,6 +39,22 @@ async function run() {
             res.send(result)
         })
 
+        app.get("/allproducts/report", async (req, res) => {
+            const query = {}
+            const result = await ReportedProductCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.delete("/report/:id", async (req, res) => {
+            const id = req.params.id
+            const queryReport = { _id: id }
+            const queryProduct = { _id: ObjectId(id) }
+
+            const productResult = await allProductCollection.deleteOne(queryProduct)
+            const result = await ReportedProductCollection.deleteOne(queryReport)
+            res.send(result)
+        })
+
         // update a advertize status 
         app.put("/allproduct/:id", async (req, res) => {
             // const product = req.body
