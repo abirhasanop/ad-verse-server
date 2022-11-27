@@ -123,7 +123,7 @@ async function run() {
         // inserting order to database
         app.post("/orders", async (req, res) => {
             const order = req.body
-            const updatedProduct = await allProductCollection.updateOne({ _id: ObjectId(order._id) }, { $set: { status: "Sold" } })
+            const updatedProduct = await allProductCollection.updateOne({ _id: ObjectId(order.productId) }, { $set: { status: "Sold" } })
             const result = await allOrdersCollection.insertOne(order)
             res.send(result)
         })
@@ -131,16 +131,18 @@ async function run() {
         // finding all orders
         app.get("/orders", async (req, res) => {
             const email = req.query.email
-            console.log(email);
             const query = { email: email }
             const result = await allOrdersCollection.find(query).toArray()
             res.send(result)
         })
-        // delete orders
-        app.delete("/orders/:id", async (req, res) => {
+        // delete orders nad update products staus
+        app.post("/orders/delete/:id", async (req, res) => {
             const id = req.params.id
+            // console.log(id);
+            const productId = req.body.productId
+            console.log(productId);
             const query = { _id: ObjectId(id) }
-            const updatedProduct = await allProductCollection.updateOne({ _id: ObjectId(id) }, { $set: { status: "Available" } })
+            const updatedProduct = await allProductCollection.updateOne({ _id: ObjectId(productId) }, { $set: { status: "Available" } })
             const result = await allOrdersCollection.deleteOne(query)
             res.send(result)
         })
@@ -157,7 +159,6 @@ async function run() {
             const email = req.params.email
             const query = { email: email }
             const user = await allUsersCollection.findOne(query)
-            console.log(user);
             res.send({ isAdmin: user?.role === "admin" })
         })
 
@@ -168,7 +169,7 @@ async function run() {
             const email = req.params.email
             const updatedUser = await allUsersCollection.updateOne({ email }, { $set: { varified: true } })
             const updateProducts = await allProductCollection.updateMany({ sellerEmail: email }, { $set: { varified: true } })
-            console.log(updateProducts)
+            // console.log(updateProducts)
             res.json(updatedUser)
         })
     } finally {
