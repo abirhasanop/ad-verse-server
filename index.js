@@ -109,6 +109,14 @@ async function run() {
             res.send(result)
         })
 
+        // delete a user 
+        app.delete("/users/:id", async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await allUsersCollection.deleteOne(query)
+            res.send(result)
+        })
+
         // find buyers form usrs
         app.get("/buyers", async (req, res) => {
             const query = { role: "buyer" }
