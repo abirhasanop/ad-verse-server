@@ -104,7 +104,7 @@ async function run() {
 
 
         // find adevertized product
-        app.get("/advertizedproduct", verifyJwt, async (req, res) => {
+        app.get("/advertizedproduct", async (req, res) => {
             const query = { advertised: true }
             const result = await allProductCollection.find(query).toArray()
             res.send(result)
@@ -174,7 +174,7 @@ async function run() {
         })
 
         // find buyers form usrs
-        app.get("/buyers", verifyJwt, async (req, res) => {
+        app.get("/buyers", async (req, res) => {
             const query = { role: "buyer" }
             const result = await allUsersCollection.find(query).toArray()
             res.send(result)
@@ -195,7 +195,7 @@ async function run() {
         })
 
         // finding all orders
-        app.get("/orders", verifyJwt, async (req, res) => {
+        app.get("/orders", async (req, res) => {
             const email = req.query.email
             const query = { email: email }
             const result = await allOrdersCollection.find(query).toArray()
